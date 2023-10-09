@@ -139,6 +139,8 @@
             </style>
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <!-- <script src="https://parall.ax/parallax/js/jspdf.js"></script> -->
         </header>
         
         <body>
@@ -165,6 +167,7 @@
             </div>
             <hr>
             <button class="button add-customer">+ Add Customer</button>
+            <button class="button delete-customer">Delete User Account</button> 
             <dialog class="modal" id="modal">
                 <h2>Add New User</h2>
                 <form class="form" method="dialog" id="newUser">
@@ -202,33 +205,184 @@
                 </form>
 
             </dialog>
-            <button id="button">Generate PDF</button>
-            <div hidden id="container-1">
 
+            <dialog class="modal" id="modal2">
+                <h2>Delete User</h2>
+                <form class="form" method="dialog" id="deleteUser">
+                    <label>Customer ID: <input id="delete_customer_id" type="text"></label>
+                    <br>
+                    <br>
+                    
+                    <button class="button submit-form2" type="submit">submit</button>
+                </form>
+    
+            </dialog>
+            <button id="button" onclick="rent1()">Generate PDF</button>
+            <div>
+                <input type="number" class="search" id="data-input4" placeholder="Enter User Id!">
+                <button class="submit" id="Edit">Edit My Info</button>
             </div>
+            <dialog class="modal" id="modal3">
+                <h2>Edit Category</h2>
+                <form class="form" method="dialog" id="editUser">
+                    <label>Store: <input id="store" type="text"></label>
+                    <br>
+                    <br>
+                    <label>First Name: <input id="edit_first_name" type="text"></label>
+                    <br>
+                    <br>
+                    <label>Last Name: <input id="edit_last_name" type="text"></label>
+                    <br>
+                    <br>
+                    <label>Phone Number: <input id="edit_phone" type="tel"></label>
+                    <br>
+                    <br>
+                    <label>Email: <input id="edit_email" type="email"></label>
+                    <br>
+                    <br>
+                    <label>Address: <input id="edit_address" type="text"></label>
+                    <br>
+                    <br>
+                    <label>District: <input id="edit_district" type="text"></label>
+                    <br>
+                    <br>
+                    <label>City: <input id="edit_city" type="text"></label>
+                    <br>
+                    <br>
+                    <label>Country: <input id="edit_country" type="text"></label>
+                    <br>
+                    <br>
+                    <label>Postal Code: <input id="edit_postal" type="text"></label>
+                    <br>
+                    <br>
+                    <button class="button edit_submit-form" type="submit">submit form</button>
+                </form>
+
+            </dialog>
+
+            <div id="container-1" hidden >
+            </div>
+            <dialog class="modal" id="modal4">
+                <form class="form" method="dialog" id="Download info">
+                    <button class="button download" type="submit">Download</button>
+                </form>
+    
+            </dialog>
+            <!-- <button id ="test" class="test">Testing</button> -->
         </body>
         <script>
             var xhr = null;
+            const pdf1 = document.getElementById("container-1");
+            
+
             const modal = document.querySelector("#modal");
+            const modal2 = document.querySelector("#modal2");
+            // const modal3 = document.querySelector("#modal3");
+            const modal4 = document.querySelector("#modal4");
             const openModal = document.querySelector(".add-customer");
+            const openModal2 = document.querySelector("edit");
+            // const openModal3 = document.querySelector(".edit_submit-form");
+            const openModal4 = document.querySelector("button");
             const closeModal = document.querySelector(".submit-form");
+            const closeModal2 = document.querySelector(".submit-form2");
+            // const closeModal3 = document.querySelector(".edit_submit-form");
+            const closeModal4 = document.querySelector(".download");
 
             openModal.addEventListener("click", () => {
             modal.showModal();
-            });
+            }); 
 
-            let button = document.getElementById("button");
-                button.addEventListener("click", function () {
-                getRent1();
+            // openModal4.addEventListener("click", () => {
+            // getRent1();
+            // modal4.showModal();
+            // }); 
+
+            // pdf1.onload = function (){getRent1()};
+            // openModal2.addEventListener("click", () => {
+            // modal2.showModal();
+            // });
+
+            // closeModal2.addEventListener("click", () => {
+            //     let customer_id = document.getElementById("delete_customer_id");
+
+            //     if (customer_id.value == ""){
+            //         alert("Please fill in all fields");
+            //     }else{
+            //         deleteUser();
+            //         console.log("Deleting User..");
+            //     }
+
+            // modal.close();
+            // });
+
+
+
+            function addInfo() {
                 
+                var doc = new jsPDF();
+                $("#container-1").removeAttr('hidden')
+                doc.fromHTML(document.getElementById("container-1"),5,5)
+                
+                
+                $("#container-1").attr('hidden', 'true')
+                doc.save("store1_rentals.pdf")
                 // let doc = new jsPDF("p", "mm", [300, 300]);
-                let makePDF = document.querySelector("#container-1");
-                html2pdf().from(makePDF).save("store1_rentals.pdf");
+                // let makePDF = document.querySelector("#container-1");
+                // html2pdf().from(makePDF).save("store1_rentals.pdf");
                 // fromHTML Method
                 // doc.fromHTML(makePDF);
                 // doc.save();
-            });
+                console.log("Then I reached here again")
+            }
             
+            function sendDataCallbackDelete(){
+                // Check response is ready or not
+                if (xhr.readyState == 4 && xhr.status == 204) {
+                    console.log("User Deleted!");
+                    
+                }else{
+                    console.log("User not deleted");
+                
+                }
+            }
+
+            function deleteUser(){
+                let customer_id= document.getElementById("delete_customer_id").value;
+                xhr = getXmlHttpRequestObject();
+                xhr.onreadystatechange = sendDataCallbackDelete;
+                // asynchronous requests
+                xhr.open("POST", "http://127.0.0.1:5000/deleteUser", true);
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                // Send the request over the network
+                xhr.send(JSON.stringify({"customer_id": customer_id}));
+
+            }
+
+            function dataCallbackTest(){
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    console.log("Test results received!");
+                    const info = document.getElementById("container-1");
+
+                    myObj = JSON.parse(xhr.responseText);
+                    info.innerHTML = "<h2>Test results</h2></br>";
+                    count = Object.keys(myObj).length
+                    for(let i = 0; i < count; i++){
+                        info.innerHTML +=
+                        "<b>Customer ID:</b> " + myObj[i].address_id + "</br>";
+                    }
+                }
+
+            }
+            
+            function getTest(){
+                console.log("Running tests...");
+                xhr = getXmlHttpRequestObject();
+                xhr.onreadystatechange = dataCallbackTest;
+                // asynchronous requests
+                xhr.open("GET", "http://127.0.0.1:5000/test", true);
+                // Send the request over the network
+                xhr.send(null);
+            }
             function dataCallbackR1(){
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     console.log("Store 1 rentals received!");
@@ -238,12 +392,16 @@
                     info.innerHTML = "<h2>Store 1 Rentals</h2></br>";
                     count = Object.keys(myObj).length
                     for(let i = 0; i < count; i++){
+                        console.log("Got here")
                         info.innerHTML +=
                         "<b>Rental ID:</b> " + myObj[i].rental_id + "</br>" +
                         "<b>Rental Date:</b> " + myObj[i].rental_date + "</br>" +
                         "<b>Inventory ID:</b> " + myObj[i].inventory_id + "</br>" +
-                        "<b>Customer ID:</b> " + myObj[i].customer_id + "</br>" + 
-                        "<b>Return Date:</b> " + myObj[i].return_date + "</br>"}
+                        "<b>Customer ID:</b> " + myObj[i].customer_id + "</br></br>";
+                        // + 
+                        // "<b>Return Date:</b> " + myObj[i].return_date + "</br>";
+                    }
+                    console.log("I reached here");
                 }
 
             }
@@ -252,6 +410,23 @@
                 console.log("Get rentals for store 1...");
                 xhr = getXmlHttpRequestObject();
                 xhr.onreadystatechange = dataCallbackR1;
+                // asynchronous requests
+                xhr.open("GET", "http://127.0.0.1:5000/rentPDF1", true);
+                // Send the request over the network
+                xhr.send(null);
+            }
+
+            function dataCallbackRent(){
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    console.log("Store 1 rentals received!");
+                }
+
+            }
+
+            function rent1(){
+                console.log("Get rentals for store 1...");
+                xhr = getXmlHttpRequestObject();
+                xhr.onreadystatechange = dataCallbackRent;
                 // asynchronous requests
                 xhr.open("GET", "http://127.0.0.1:5000/rentPDF1", true);
                 // Send the request over the network
@@ -288,8 +463,8 @@
 
             function sendDataCallbackAddCust() {
                 // Check response is ready or not
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log("User data received!");
+                if (xhr.readyState == 4 && xhr.status == 204) {
+                    console.log("New customer added!");
                     
                 }
             }
@@ -485,9 +660,10 @@
 
                     if(tbl != null){
                         for(var i = 0; i < tbl.rows.length; i++){
-                            tbl.rows[i].cells[0].addEventListener('click', function(e) {
-                                //console.log(this.textContent)
-                                custInfo(this.textContent, 10)
+                            tbl.rows[i].addEventListener('click', function(e) {
+                                console.log(this.textContent)
+
+                                custInfo(this.textContent[0], 10)
                             })
                             // tbl.rows[i].cells[0].onclick = function () {custInfo(tbl.rows[i].cells[0].innerHTML);};
                         }
