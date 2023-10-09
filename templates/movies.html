@@ -121,6 +121,18 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
                 padding-left: 4%;
             }
 
+            .info {
+                width: 350px;
+                height: 360px;
+                margin: auto;
+                display: inline-block;
+                border-color: #c4c3d0;
+                border-style: solid;
+                vertical-align: top;
+                padding-left: 4%;
+
+            }
+
     
         
             
@@ -145,11 +157,27 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
 
         </table>
 
+        <dialog class="modal" id="modal">
+            <h2>Rent a Film</h2>
+            <form class="form" method="dialog" id="newUser">
+                <label>Customer ID: <input id="customer_id" type="text"></label>
+                <br>
+                <br>
+                
+                <button class="button submit-form" type="submit">submit</button>
+            </form>
+
+        </dialog>
         
 
     </body>
     <script>
         var xhr = null;
+        const modal = document.querySelector("#modal");
+            
+        const closeModal = document.querySelector(".submit-form");
+        
+        let name = "";
 
         getXmlHttpRequestObject = function () {
             if (!xhr) {
@@ -283,8 +311,71 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
                     
                 }
                 tbl.appendChild(tblBody);
+
+                if(tbl != null){
+                    for(var i = 0; i < tbl.rows.length; i++){
+                        tbl.rows[i].addEventListener('click', function(e) {
+                            var target = e.target,
+                                col = target.cellIndex,
+                                row;
+                            while (target = target.parentElement) {
+                                if (!col && col !== 0) {
+                                    col = target.cellIndex;
+                                }
+                                if (target.tagName.toLowerCase() === 'tr') {
+                                    row = target.rowIndex;
+                                    break;
+                                }               
+                            }
+                            console.log(tbl.rows[row].cells[0].innerHTML);
+                            modal.showModal();
+                            name = tbl.rows[row].cells[0].innerHTML;
+                            //rentMovie(tbl.rows[row].cells[0].innerHTML);
+
+                            // console.log(this.textContent[0]);
+
+                            // custInfo(this.textContent[0], 10)
+                        })
+                        // tbl.rows[i].cells[0].onclick = function () {custInfo(tbl.rows[i].cells[0].innerHTML);};
+                    }
+                }
                 
             }
+        }
+
+        closeModal.addEventListener("click", () => {
+            let customer_id = document.getElementById("customer_id");
+
+            if (customer_id.value == ""){
+                alert("Please fill in all fields");
+            }else{
+                rentMovie(name);
+                console.log("Renting film...");
+            }
+
+        modal.close();
+        });
+
+        function sendDataCallbackRentMovie() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 204) {
+                console.log("Movie Rented!");
+                
+            }else{
+                console.log("Movie not available at your store!");
+            }
+        }
+
+
+        function rentMovie(title){
+            let customer_id = document.getElementById("customer_id").value;
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallbackRentMovie;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/rentMovie", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"title": title, "customer_id": customer_id}));
         }
 
         function sendDataTitle() {
