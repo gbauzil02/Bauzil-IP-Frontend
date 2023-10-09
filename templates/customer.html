@@ -103,15 +103,6 @@
 
                 }
 
-                /* .floating-box_input{
-                    display: inline-block;
-                    width: 350px;
-                    height: 360px;
-                    border-style: solid;
-                    border-color: #c4c3d0;
-                    padding-left: 5%;
-                } */
-
                 div {
                     width: 400px;
                     margin: auto;
@@ -119,22 +110,7 @@
                     padding-left: 4%;
                 }
 
-                /* .modal{
-                    // padding: 1em;
-                    // max-width: 50ch; 
-                    border-color: #c4c3d0;
-                    box-shadow: 0 0 1em rgb(0 0 0 / .3);
-                    & > * {
-                        margin: 0 0 0.5rem 0;
-                    }
 
-                }
-
-                .modal::backdrop{
-                    // background: linear-gradient(45deg, #c33764, #1d2671); 
-                    background: #c4c3d0;
-                    opacity: .65;
-                } */
                 
             </style>
 
@@ -168,6 +144,8 @@
             <hr>
             <button class="button add-customer">+ Add Customer</button>
             <button class="button delete-customer">Delete User Account</button> 
+            
+
             <dialog class="modal" id="modal">
                 <h2>Add New User</h2>
                 <form class="form" method="dialog" id="newUser">
@@ -217,7 +195,6 @@
                 </form>
     
             </dialog>
-            <button id="button" onclick="rent1()">Generate PDF</button>
             <div>
                 <input type="number" class="search" id="data-input4" placeholder="Enter User Id!">
                 <button class="submit" id="Edit">Edit My Info</button>
@@ -257,17 +234,16 @@
                     <br>
                     <button class="button edit_submit-form" type="submit">submit form</button>
                 </form>
-
             </dialog>
 
-            <div id="container-1" hidden >
-            </div>
-            <dialog class="modal" id="modal4">
-                <form class="form" method="dialog" id="Download info">
-                    <button class="button download" type="submit">Download</button>
-                </form>
-    
-            </dialog>
+            <br>
+            <br>
+            <a href="{{ url_for('.rentPDF1') }}">Download Store 1 Rental Report</a>
+            <br>
+            <a href="{{ url_for('.rentPDF2') }}">Download Store 2 Rental Report</a>
+            <br>
+
+            
             <!-- <button id ="test" class="test">Testing</button> -->
         </body>
         <script>
@@ -292,16 +268,6 @@
             modal.showModal();
             }); 
 
-            // openModal4.addEventListener("click", () => {
-            // getRent1();
-            // modal4.showModal();
-            // }); 
-
-            // pdf1.onload = function (){getRent1()};
-            // openModal2.addEventListener("click", () => {
-            // modal2.showModal();
-            // });
-
             // closeModal2.addEventListener("click", () => {
             //     let customer_id = document.getElementById("delete_customer_id");
 
@@ -316,25 +282,6 @@
             // });
 
 
-
-            function addInfo() {
-                
-                var doc = new jsPDF();
-                $("#container-1").removeAttr('hidden')
-                doc.fromHTML(document.getElementById("container-1"),5,5)
-                
-                
-                $("#container-1").attr('hidden', 'true')
-                doc.save("store1_rentals.pdf")
-                // let doc = new jsPDF("p", "mm", [300, 300]);
-                // let makePDF = document.querySelector("#container-1");
-                // html2pdf().from(makePDF).save("store1_rentals.pdf");
-                // fromHTML Method
-                // doc.fromHTML(makePDF);
-                // doc.save();
-                console.log("Then I reached here again")
-            }
-            
             function sendDataCallbackDelete(){
                 // Check response is ready or not
                 if (xhr.readyState == 4 && xhr.status == 204) {
@@ -383,58 +330,6 @@
                 // Send the request over the network
                 xhr.send(null);
             }
-            function dataCallbackR1(){
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log("Store 1 rentals received!");
-                    const info = document.getElementById("container-1");
-
-                    myObj = JSON.parse(xhr.responseText);
-                    info.innerHTML = "<h2>Store 1 Rentals</h2></br>";
-                    count = Object.keys(myObj).length
-                    for(let i = 0; i < count; i++){
-                        console.log("Got here")
-                        info.innerHTML +=
-                        "<b>Rental ID:</b> " + myObj[i].rental_id + "</br>" +
-                        "<b>Rental Date:</b> " + myObj[i].rental_date + "</br>" +
-                        "<b>Inventory ID:</b> " + myObj[i].inventory_id + "</br>" +
-                        "<b>Customer ID:</b> " + myObj[i].customer_id + "</br></br>";
-                        // + 
-                        // "<b>Return Date:</b> " + myObj[i].return_date + "</br>";
-                    }
-                    console.log("I reached here");
-                }
-
-            }
-
-            function getRent1(){
-                console.log("Get rentals for store 1...");
-                xhr = getXmlHttpRequestObject();
-                xhr.onreadystatechange = dataCallbackR1;
-                // asynchronous requests
-                xhr.open("GET", "http://127.0.0.1:5000/rentPDF1", true);
-                // Send the request over the network
-                xhr.send(null);
-            }
-
-            function dataCallbackRent(){
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log("Store 1 rentals received!");
-                }
-
-            }
-
-            function rent1(){
-                console.log("Get rentals for store 1...");
-                xhr = getXmlHttpRequestObject();
-                xhr.onreadystatechange = dataCallbackRent;
-                // asynchronous requests
-                xhr.open("GET", "http://127.0.0.1:5000/rentPDF1", true);
-                // Send the request over the network
-                xhr.send(null);
-            }
-
-            
-
 
             closeModal.addEventListener("click", () => {
                 let store = document.getElementById("store");
