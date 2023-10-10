@@ -1,5 +1,3 @@
-<!-- The following URL was used to create the htm/javascript frontend: 
-https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
 <html>
     <header>
         <title>App</title>
@@ -191,11 +189,7 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
             // Check response is ready or not
             if (xhr.readyState == 4 && xhr.status == 201) {
                 console.log("Data creation response received!");
-                // dataDiv = document.getElementById('sent-data-container');
-                // // Set current data text
-                // dataDiv.innerHTML = xhr.responseText;
 
-                // const tbl = document.createElement("table");
                 const tbl = document.getElementById("res");
                 
                 x = tbl.rows.length;
@@ -327,19 +321,13 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
                                     break;
                                 }               
                             }
+                            console.log("What I need")
                             console.log(tbl.rows[row].cells[0].innerHTML);
                             modal.showModal();
                             name = tbl.rows[row].cells[0].innerHTML;
-                            //rentMovie(tbl.rows[row].cells[0].innerHTML);
-
-                            // console.log(this.textContent[0]);
-
-                            // custInfo(this.textContent[0], 10)
                         })
-                        // tbl.rows[i].cells[0].onclick = function () {custInfo(tbl.rows[i].cells[0].innerHTML);};
                     }
-                }
-                
+                } 
             }
         }
 
@@ -426,6 +414,4 @@ https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
             xhr.send(JSON.stringify({"data": dataToSend}));
         }
     </script>
-
-    
-    </html>
+</html>
