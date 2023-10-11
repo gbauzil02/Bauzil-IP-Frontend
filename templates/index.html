@@ -1,5 +1,3 @@
-<!-- The following URL was used to create the htm/javascript frontend: 
-    https://tms-dev-blog.com/python-backend-with-javascript-frontend-how-to/ -->
 <html>
 <header>
     <title>App</title>
@@ -92,7 +90,6 @@
             display: inline-block;
             vertical-align: top;
             padding-left: 4%;
-            /* padding-top: 4%; */
         }
 
         .info {
@@ -114,249 +111,233 @@
             padding-left: 4%;
             padding-right: 4%;
         }
-
-
-        
-
-    
-        
+  
     </style>
-</header>
+    </header>
 
-<body onload = "getMovies(); getActors();" defer>
-    <br>
-    <table id = "res">
-            
-    </table>
+    <body onload = "getMovies(); getActors();" defer>
+        <br>
+        <table id = "res">
+                
+        </table>
 
-    <div id = "infobox" class="info">
-        <p></p>
-    </div>
+        <div id = "infobox" class="info">
+            <p></p>
+        </div>
 
-    <br>
-    <br>
+        <br>
+        <br>
 
-    <table id = "res2">
-            
-    </table>
-    <div id = "infobox2" class="info">
-        <p></p>
-    </div>
+        <table id = "res2">
+                
+        </table>
+        <div id = "infobox2" class="info">
+            <p></p>
+        </div>
+    </body>
+    <script>
+        var xhr = null;
 
-    <!-- <button onclick=getActors()></button> -->
-</body>
-<script>
-    var xhr = null;
-
-    getXmlHttpRequestObject = function () {
-        if (!xhr) {
-            // Create a new XMLHttpRequest object 
-            xhr = new XMLHttpRequest();
-        }
-        return xhr;
-    };
-
-
-    // Handles response from backend
-    function dataCallback() {
-        // Check response is ready or not
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            console.log("User data received!");
-
-            const tbl = document.getElementById("res");
-            
-            x = tbl.rows.length;
-            for (let i = 0; i < x; i++){
-                tbl.deleteRow(0);
+        getXmlHttpRequestObject = function () {
+            if (!xhr) {
+                // Create a new XMLHttpRequest object 
+                xhr = new XMLHttpRequest();
             }
+            return xhr;
+        };
 
-            const tblBody = document.createElement("tbody");
 
-            myObj = JSON.parse(xhr.responseText)
+        // Handles response from backend
+        function dataCallback() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log("User data received!");
 
-            const head = document.createElement("tr");
-
-            const cell1 = document.createElement("th");
-            const text1 = document.createTextNode("Top Movies");
-            cell1.appendChild(text1);
-            head.appendChild(cell1);
-
-            tblBody.appendChild(head);
-            // creating all cells
-            count = Object.keys(myObj).length
-            for(let i = 0; i < count; i++){
-                const row = document.createElement("tr");
-                const cell1 = document.createElement("td");
-                const text1 = document.createTextNode(myObj[i].title);
-                cell1.appendChild(text1);
-                // cell1.onclick = function() {custInfo(myObj[i].customer_id);};
-                row.appendChild(cell1);
-
-                tblBody.appendChild(row);
-            }
-
-            tbl.appendChild(tblBody);
-
-            if(tbl != null){
-                for(var i = 0; i < tbl.rows.length; i++){
-                    tbl.rows[i].cells[0].addEventListener('click', function(e) {
-                        //console.log(this.textContent)
-                        movInfo(this.textContent, 10)
-                    })
-                    // tbl.rows[i].cells[0].onclick = function () {custInfo(tbl.rows[i].cells[0].innerHTML);};
+                const tbl = document.getElementById("res");
+                
+                x = tbl.rows.length;
+                for (let i = 0; i < x; i++){
+                    tbl.deleteRow(0);
                 }
-            }            
-        }
-    }
 
-    function movInfo(id) {
-        dataToSend = id;
-        console.log("Sending data: " + dataToSend);
-        console.log("Getting movie info...");
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = sendDataCallback;
-        // asynchronous requests
-        xhr.open("POST", "http://127.0.0.1:5000/getName", true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        // Send the request over the network
-        xhr.send(JSON.stringify({"data": dataToSend}));
-    }
+                const tblBody = document.createElement("tbody");
 
-    function sendDataCallback() {
-        // Check response is ready or not
-        if (xhr.readyState == 4 && xhr.status == 201) {
-            console.log("User data received!");
+                myObj = JSON.parse(xhr.responseText)
 
-            const info = document.getElementById("infobox");
+                const head = document.createElement("tr");
 
-            myObj = JSON.parse(xhr.responseText);
-            info.innerHTML = "<h2>" + myObj[0].title + "</h2></br>" +
-            "<b>Description:</b> " + myObj[0].description + "</br>" +
-            "<b>Year:</b> " + myObj[0].release_year+ "</br>" +
-            "<b>Rating:</b> " + myObj[0].rating + "</br>" +
-            "<b>Genre:</b> " + myObj[0].genre + "</br>"
-            "<b>Length:</b> " + myObj[0].length + " minutes </br>";
-        }
-    }
-
-    // Handles response from backend
-    function dataCallbackActor() {
-        // Check response is ready or not
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            console.log("User data received!");
-
-            const tbl = document.getElementById("res2");
-            
-            x = tbl.rows.length;
-            for (let i = 0; i < x; i++){
-                tbl.deleteRow(0);
-            }
-
-            const tblBody = document.createElement("tbody");
-
-            myObj = JSON.parse(xhr.responseText)
-
-            const head = document.createElement("tr");
-
-            const cell1 = document.createElement("th");
-            const text1 = document.createTextNode("Top Actors");
-            cell1.appendChild(text1);
-            head.appendChild(cell1);
-
-            tblBody.appendChild(head);
-            // creating all cells
-            count = Object.keys(myObj).length
-            for(let i = 0; i < count; i++){
-                const row = document.createElement("tr");
-                const cell1 = document.createElement("td");
-
-                const text1 = document.createTextNode(myObj[i].first_name + ' ' + myObj[i].last_name);
+                const cell1 = document.createElement("th");
+                const text1 = document.createTextNode("Top Movies");
                 cell1.appendChild(text1);
-                // cell1.onclick = function() {custInfo(myObj[i].customer_id);};
-                row.appendChild(cell1);
+                head.appendChild(cell1);
 
-                tblBody.appendChild(row);
-            }
+                tblBody.appendChild(head);
+                // creating all cells
+                count = Object.keys(myObj).length
+                for(let i = 0; i < count; i++){
+                    const row = document.createElement("tr");
+                    const cell1 = document.createElement("td");
+                    const text1 = document.createTextNode(myObj[i].title);
+                    cell1.appendChild(text1);
+                    // cell1.onclick = function() {custInfo(myObj[i].customer_id);};
+                    row.appendChild(cell1);
 
-            tbl.appendChild(tblBody);
-
-            if(tbl != null){
-                for(var i = 0; i < tbl.rows.length; i++){
-                    tbl.rows[i].cells[0].addEventListener('click', function(e) {
-                        //console.log(this.textContent)
-                        actInfo(this.textContent, 10)
-                    })
-                    // tbl.rows[i].cells[0].onclick = function () {custInfo(tbl.rows[i].cells[0].innerHTML);};
+                    tblBody.appendChild(row);
                 }
-            }  
-        }
-    }
 
-    function actInfo(id) {
-        dataToSend = id;
-        console.log("Sending data: " + dataToSend);
-        console.log("Getting actor info...");
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = sendDataCallbackAct;
-        // asynchronous requests
-        xhr.open("POST", "http://127.0.0.1:5000/topActFilms", true);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        // Send the request over the network
-        xhr.send(JSON.stringify({"data": dataToSend}));
-    }
+                tbl.appendChild(tblBody);
 
-    function sendDataCallbackAct() {
-        // Check response is ready or not
-        if (xhr.readyState == 4 && xhr.status == 201) {
-            console.log("Actor data received!");
-
-            const info = document.getElementById("infobox2");
-
-            myObj = JSON.parse(xhr.responseText);
-            info.innerHTML = "<h2>" + myObj[0].first_name + " " + myObj[0].last_name + "</h2></br>"; 
-            info.innerHTML += "<b>Top Films</b></br>";
-
-            count = Object.keys(myObj).length
-            for(let i = 0; i < count; i++){
-                info.innerHTML += myObj[i].title + "</br>"
+                if(tbl != null){
+                    for(var i = 0; i < tbl.rows.length; i++){
+                        tbl.rows[i].cells[0].addEventListener('click', function(e) {
+                            movInfo(this.textContent, 10)
+                        })
+                    }
+                }            
             }
         }
-    }
 
+        function movInfo(id) {
+            dataToSend = id;
+            console.log("Sending data: " + dataToSend);
+            console.log("Getting movie info...");
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallback;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/getName", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"data": dataToSend}));
+        }
 
+        function sendDataCallback() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 201) {
+                console.log("User data received!");
 
+                const info = document.getElementById("infobox");
 
-    // Making a rest call to a health-check endpoint in backend
-    function getHealth() {
-        console.log("Get health...");
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = dataCallback;
-        // asynchronous requests
-        xhr.open("GET", "http://127.0.0.1:5000/health", true);
-        // Send the request over the network
-        xhr.send(null);
-    }
+                myObj = JSON.parse(xhr.responseText);
+                info.innerHTML = "<h2>" + myObj[0].title + "</h2></br>" +
+                "<b>Description:</b> " + myObj[0].description + "</br>" +
+                "<b>Year:</b> " + myObj[0].release_year+ "</br>" +
+                "<b>Rating:</b> " + myObj[0].rating + "</br>" +
+                "<b>Genre:</b> " + myObj[0].genre + "</br>"
+                "<b>Length:</b> " + myObj[0].length + " minutes </br>";
+            }
+        }
 
-    function getMovies() {
-        console.log("Get movies...");
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = dataCallback;
-        // asynchronous requests
-        xhr.open("GET", "http://127.0.0.1:5000/films", false);
-        // Send the request over the network
-        xhr.send(null);
+        // Handles response from backend
+        function dataCallbackActor() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log("User data received!");
+
+                const tbl = document.getElementById("res2");
+                
+                x = tbl.rows.length;
+                for (let i = 0; i < x; i++){
+                    tbl.deleteRow(0);
+                }
+
+                const tblBody = document.createElement("tbody");
+
+                myObj = JSON.parse(xhr.responseText)
+
+                const head = document.createElement("tr");
+
+                const cell1 = document.createElement("th");
+                const text1 = document.createTextNode("Top Actors");
+                cell1.appendChild(text1);
+                head.appendChild(cell1);
+
+                tblBody.appendChild(head);
+                count = Object.keys(myObj).length
+                for(let i = 0; i < count; i++){
+                    const row = document.createElement("tr");
+                    const cell1 = document.createElement("td");
+
+                    const text1 = document.createTextNode(myObj[i].first_name + ' ' + myObj[i].last_name);
+                    cell1.appendChild(text1);
+                    row.appendChild(cell1);
+
+                    tblBody.appendChild(row);
+                }
+
+                tbl.appendChild(tblBody);
+
+                if(tbl != null){
+                    for(var i = 0; i < tbl.rows.length; i++){
+                        tbl.rows[i].cells[0].addEventListener('click', function(e) {
+                            actInfo(this.textContent, 10)
+                        })
+                    }
+                }  
+            }
+        }
+
+        function actInfo(id) {
+            dataToSend = id;
+            console.log("Sending data: " + dataToSend);
+            console.log("Getting actor info...");
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallbackAct;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/topActFilms", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"data": dataToSend}));
+        }
+
+        function sendDataCallbackAct() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 201) {
+                console.log("Actor data received!");
+
+                const info = document.getElementById("infobox2");
+
+                myObj = JSON.parse(xhr.responseText);
+                info.innerHTML = "<h2>" + myObj[0].first_name + " " + myObj[0].last_name + "</h2></br>"; 
+                info.innerHTML += "<b>Top Films</b></br>";
+
+                count = Object.keys(myObj).length
+                for(let i = 0; i < count; i++){
+                    info.innerHTML += myObj[i].title + "</br>"
+                }
+            }
+        }
+
+        // Making a rest call to a health-check endpoint in backend
+        function getHealth() {
+            console.log("Get health...");
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = dataCallback;
+            // asynchronous requests
+            xhr.open("GET", "http://127.0.0.1:5000/health", true);
+            // Send the request over the network
+            xhr.send(null);
+        }
+
+        function getMovies() {
+            console.log("Get movies...");
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = dataCallback;
+            // asynchronous requests
+            xhr.open("GET", "http://127.0.0.1:5000/films", false);
+            // Send the request over the network
+            xhr.send(null);
+            
+        }
         
-    }
-    
-    function getActors() {
-        console.log("Get actors...");
-        xhr = getXmlHttpRequestObject();
-        xhr.onreadystatechange = dataCallbackActor;
-        // asynchronous requests
-        xhr.open("GET", "http://127.0.0.1:5000/actors", true);
-        // Send the request over the network
-        xhr.send(null);
-    }
-</script>
+        function getActors() {
+            console.log("Get actors...");
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = dataCallbackActor;
+            // asynchronous requests
+            xhr.open("GET", "http://127.0.0.1:5000/actors", true);
+            // Send the request over the network
+            xhr.send(null);
+        }
+    </script>
 
 </html>
