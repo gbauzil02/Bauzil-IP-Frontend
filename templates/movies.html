@@ -1,0 +1,462 @@
+<html>
+    <header>
+        <title>App</title>
+        <div class="container">
+            <nav>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('movies') }}">Movies</a></li>
+                <li><a href="{{ url_for('customer') }}">Customer</a></li>
+            </nav>
+        </div>
+        <style>
+            td {
+                border-style: solid;
+                border-color: #c4c3d0;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+            }
+            th {
+                border-style: solid;
+                border-color: #c4c3d0;
+                background-color: #c4c3d0;
+            }
+            table {
+                margin-top: 50px;
+                margin-left: 50px;
+            }
+            .container{
+                width: 80%;
+                margin: 0 auto;
+            }
+    
+            header{
+                background: #c4c3d0; 
+            }
+    
+            header::after{
+                content: '';
+                display: table;
+                clear: both;
+            }
+    
+            nav{
+                float: right;
+            }
+    
+            nav ul{
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+    
+            nav li{
+                display: inline-block;
+                margin-left: 70px;
+                padding-top: 23px;
+                padding-bottom: 23px;
+                position: relative;
+            }
+    
+            nav a{
+                color: #444;
+                text-decoration: none;
+                text-transform: uppercase;
+            }
+            nav a:hover{
+                color: #000;
+            }
+            nav li ::before {
+                content: "";
+                display: block;
+                height: 5px;
+                background-color: #9998aa;
+    
+                position: absolute;
+                top: 0;
+                width: 0%;
+    
+                transition: all ease-in-out 250ms;
+            }
+        
+            nav li :hover::before {
+                width: 100%;
+            }
+            form {
+                width: 400px;
+                margin: auto;
+                display: inline-block;
+                padding-left: 4%;
+            }
+            input {
+                padding: 4px 10px;
+                border: 0;
+                font-size: 16px;
+            }
+            .search {
+                width: 75%;
+                border: solid;
+            }
+            .submit {
+                width: 70px;
+                background-color: #9998aa;
+                color: #ffffff;
+            }
+            h2{
+                text-align: center;
+            }
+
+            caption {
+                display: table-caption;
+                text-align: left;
+            }
+
+            div {
+                width: 400px;
+                margin: auto;
+                display: inline-block;
+                padding-left: 4%;
+            }
+
+            .info {
+                width: 350px;
+                height: 360px;
+                margin: auto;
+                display: inline-block;
+                border-color: #c4c3d0;
+                border-style: solid;
+                vertical-align: top;
+                padding-left: 4%;
+
+            }
+
+            .message .success{
+                color: lime;
+                position: absolute;
+                display: none;
+
+            }
+
+            .message .empty{
+                color: red;
+                position: absolute;
+                display: none;
+
+            }
+
+            .message .error{
+                color: red;
+                position: absolute;
+                display: none;
+
+            } 
+ 
+        </style>
+    </header>
+    
+    <body>
+        <h2>Search Movies</h2>
+        <div>
+            <input type="text" class="search" id="data-input" placeholder="Search by name!">
+            <button class="submit" onclick="sendDataTitle()">Search</button>
+        </div>
+        <div>
+            <input type="text" class="search" id="data-input2" placeholder="Search by actor!">
+            <button class="submit" onclick="sendDataActor()">Search</button>
+        </div>
+        <div>
+            <input type="text" class="search" id="data-input3" placeholder="Search by genre!">
+            <button class="submit" onclick="sendDataGenre()">Search</button>
+        </div>
+        <br>
+        <div class="message">
+            <div class="success" id="success">SUCCESS!</div>
+            <div class="empty" id="empty">PLEASE FILL OUT ALL FIELDS</div>
+            <div class="error" id="error"></div>
+        </div>
+        <br>
+        <table id = "res">
+
+        </table>
+
+
+        <dialog class="modal" id="modal">
+            <h2>Rent a Film</h2>
+            <form class="form" method="dialog" id="newUser">
+                <label>Customer ID: <input id="customer_id" type="text"></label>
+                <br>
+                <br>
+                
+                <button class="button submit-form" type="submit">submit</button>
+            </form>
+
+        </dialog>
+        
+
+    </body>
+    <script>
+        var xhr = null;
+        const modal = document.querySelector("#modal");
+            
+        const closeModal = document.querySelector(".submit-form");
+        
+        let name = "";
+        closeModal.addEventListener("click", () => {
+            let customer_id = document.getElementById("customer_id");
+
+            if (customer_id.value == ""){
+                alert("Please fill in all fields");
+            }else{
+                rentMovie(name);
+                console.log("Renting film...");
+            }
+
+        modal.close();
+        });
+
+        getXmlHttpRequestObject = function () {
+            if (!xhr) {
+                // Create a new XMLHttpRequest object 
+                xhr = new XMLHttpRequest();
+            }
+            return xhr;
+        };
+        
+        function sendDataCallback() {
+            // Check response is ready or not
+            if (xhr.readyState == 4 && xhr.status == 201) {
+                console.log("Data creation response received!");
+
+                const tbl = document.getElementById("res");
+                
+                x = tbl.rows.length;
+                for (let i = 0; i < x; i++){
+                    tbl.deleteRow(0);
+                }
+
+                const tblBody = document.createElement("tbody");
+
+                let caption = tbl.createCaption();
+
+                caption.textContent = "Click a movie to rent...";
+                myObj = JSON.parse(xhr.responseText)
+
+                const head = document.createElement("tr");
+
+                const cell1 = document.createElement("th");
+                const text1 = document.createTextNode("Title");
+                cell1.appendChild(text1);
+                head.appendChild(cell1);
+
+                const cell2 = document.createElement("th");
+                const text2 = document.createTextNode("Description");
+                cell2.appendChild(text2);
+                head.appendChild(cell2);
+
+                const cell3 = document.createElement("th");
+                const text3 = document.createTextNode("Release Year");
+                cell3.appendChild(text3);
+                head.appendChild(cell3);
+
+                const cell4 = document.createElement("th");
+                const text4 = document.createTextNode("Rental Duration");
+                cell4.appendChild(text4);
+                head.appendChild(cell4);
+
+                const cell5 = document.createElement("th");
+                const text5 = document.createTextNode("Rate");
+                cell5.appendChild(text5);
+                head.appendChild(cell5);
+
+                const cell6 = document.createElement("th");
+                const text6 = document.createTextNode("Length");
+                cell6.appendChild(text6);
+                head.appendChild(cell6);
+
+                const cell7 = document.createElement("th");
+                const text7 = document.createTextNode("Rating");
+                cell7.appendChild(text7);
+                head.appendChild(cell7);
+
+                const cell8 = document.createElement("th");
+                const text8 = document.createTextNode("Special Features");
+                cell8.appendChild(text8);
+                head.appendChild(cell8);
+
+                const cell9 = document.createElement("th");
+                const text9 = document.createTextNode("Genre");
+                cell9.appendChild(text9);
+                head.appendChild(cell9);
+
+                tblBody.appendChild(head);
+
+                count = Object.keys(myObj).length
+                for(let i = 0; i < count; i++){
+                    const row = document.createElement("tr");
+                    const cell1 = document.createElement("td");
+                    const text1 = document.createTextNode(myObj[i].title);
+                    cell1.appendChild(text1);
+                    row.appendChild(cell1);
+
+                    const cell2 = document.createElement("td");
+                    const text2 = document.createTextNode(myObj[i].description);
+                    cell2.appendChild(text2);
+                    row.appendChild(cell2);
+
+                    const cell3 = document.createElement("td");
+                    const text3 = document.createTextNode(myObj[i].release_year);
+                    cell3.appendChild(text3);
+                    row.appendChild(cell3);
+
+                    const cell4 = document.createElement("td");
+                    const text4 = document.createTextNode(myObj[i].rental_duration);
+                    cell4.appendChild(text4);
+                    row.appendChild(cell4);
+
+                    const cell5 = document.createElement("td");
+                    const text5 = document.createTextNode(myObj[i].rental_rate);
+                    cell5.appendChild(text5);
+                    row.appendChild(cell5);
+
+                    const cell6 = document.createElement("td");
+                    const text6 = document.createTextNode(myObj[i].length);
+                    cell6.appendChild(text6);
+                    row.appendChild(cell6);
+
+                    const cell7 = document.createElement("td");
+                    const text7 = document.createTextNode(myObj[i].rating);
+                    cell7.appendChild(text7);
+                    row.appendChild(cell7);
+
+                    const cell8 = document.createElement("td");
+                    const text8 = document.createTextNode(myObj[i].special_features);
+                    cell8.appendChild(text8);
+                    row.appendChild(cell8);
+
+                    const cell9 = document.createElement("td");
+                    const text9 = document.createTextNode(myObj[i].genre);
+                    cell9.appendChild(text9);
+                    row.appendChild(cell9);
+
+                    tblBody.appendChild(row);
+                    
+                }
+                tbl.appendChild(tblBody);
+
+                if(tbl != null){
+                    for(var i = 0; i < tbl.rows.length; i++){
+                        tbl.rows[i].addEventListener('click', function(e) {
+                            var target = e.target,
+                                col = target.cellIndex,
+                                row;
+                            while (target = target.parentElement) {
+                                if (!col && col !== 0) {
+                                    col = target.cellIndex;
+                                }
+                                if (target.tagName.toLowerCase() === 'tr') {
+                                    row = target.rowIndex;
+                                    break;
+                                }               
+                            }
+                            console.log(tbl.rows[row].cells[0].innerHTML);
+                            modal.showModal();
+                            name = tbl.rows[row].cells[0].innerHTML;
+                        })
+                    }
+                } 
+            }
+        }
+
+        
+
+        function sendDataCallbackRentMovie() {
+            // Check response is ready or not
+            let success = document.getElementById("success");
+            let empty = document.getElementById("empty");
+            let error = document.getElementById("error");
+            let customer_id = document.getElementById("customer_id");
+            if (xhr.readyState == 4 && xhr.status == 204) {
+                console.log("Movie Rented!");
+
+                empty.style.display = 'none';
+                error.style.display = 'none';
+                success.style.display = 'block';
+                
+            }else{
+                empty.style.display = 'none';
+                success.style.display = 'none';
+                console.log(xhr.status);
+                if (xhr.status == 606){
+                    error.innerHTML = "Please enter valid ID";
+                }else{
+                    error.innerHTML = "ERROR";
+                }
+                
+                error.style.display = 'block';
+            }
+            customer_id.value = "";
+            
+        }
+
+
+        function rentMovie(title){
+            let customer_id = document.getElementById("customer_id").value;
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallbackRentMovie;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/rentMovie", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"title": title, "customer_id": customer_id}));
+        }
+
+        function sendDataTitle() {
+            dataToSend = document.getElementById('data-input').value;
+            if (!dataToSend) {
+                console.log("Data is empty.");
+                return;
+            }
+            console.log("Sending data: " + dataToSend);
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallback;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/getName", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"data": dataToSend}));
+        }
+
+        function sendDataGenre() {
+            dataToSend = document.getElementById('data-input3').value;
+            if (!dataToSend) {
+                console.log("Data is empty.");
+                return;
+            }
+            console.log("Sending data: " + dataToSend);
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallback;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/genre", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"data": dataToSend}));
+        }
+
+        function sendDataActor() {
+            dataToSend = document.getElementById('data-input2').value;
+            if (!dataToSend) {
+                console.log("Data is empty.");
+                return;
+            }
+            console.log("Sending data: " + dataToSend);
+            xhr = getXmlHttpRequestObject();
+            xhr.onreadystatechange = sendDataCallback;
+            // asynchronous requests
+            xhr.open("POST", "http://127.0.0.1:5000/byActor", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // Send the request over the network
+            xhr.send(JSON.stringify({"data": dataToSend}));
+        }
+    </script>
+</html>
