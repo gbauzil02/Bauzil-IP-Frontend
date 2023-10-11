@@ -131,9 +131,27 @@
 
             }
 
-    
-        
-            
+            .message .success{
+                color: lime;
+                position: absolute;
+                display: none;
+
+            }
+
+            .message .empty{
+                color: red;
+                position: absolute;
+                display: none;
+
+            }
+
+            .message .error{
+                color: red;
+                position: absolute;
+                display: none;
+
+            } 
+ 
         </style>
     </header>
     
@@ -151,9 +169,17 @@
             <input type="text" class="search" id="data-input3" placeholder="Search by genre!">
             <button class="submit" onclick="sendDataGenre()">Search</button>
         </div>
+        <br>
+        <div class="message">
+            <div class="success" id="success">SUCCESS!</div>
+            <div class="empty" id="empty">PLEASE FILL OUT ALL FIELDS</div>
+            <div class="error" id="error"></div>
+        </div>
+        <br>
         <table id = "res">
 
         </table>
+
 
         <dialog class="modal" id="modal">
             <h2>Rent a Film</h2>
@@ -176,6 +202,18 @@
         const closeModal = document.querySelector(".submit-form");
         
         let name = "";
+        closeModal.addEventListener("click", () => {
+            let customer_id = document.getElementById("customer_id");
+
+            if (customer_id.value == ""){
+                alert("Please fill in all fields");
+            }else{
+                rentMovie(name);
+                console.log("Renting film...");
+            }
+
+        modal.close();
+        });
 
         getXmlHttpRequestObject = function () {
             if (!xhr) {
@@ -201,7 +239,7 @@
 
                 let caption = tbl.createCaption();
 
-                caption.textContent = "Click to Rent...";
+                caption.textContent = "Click a movie to rent...";
                 myObj = JSON.parse(xhr.responseText)
 
                 const head = document.createElement("tr");
@@ -321,7 +359,6 @@
                                     break;
                                 }               
                             }
-                            console.log("What I need")
                             console.log(tbl.rows[row].cells[0].innerHTML);
                             modal.showModal();
                             name = tbl.rows[row].cells[0].innerHTML;
@@ -331,27 +368,35 @@
             }
         }
 
-        closeModal.addEventListener("click", () => {
-            let customer_id = document.getElementById("customer_id");
-
-            if (customer_id.value == ""){
-                alert("Please fill in all fields");
-            }else{
-                rentMovie(name);
-                console.log("Renting film...");
-            }
-
-        modal.close();
-        });
+        
 
         function sendDataCallbackRentMovie() {
             // Check response is ready or not
+            let success = document.getElementById("success");
+            let empty = document.getElementById("empty");
+            let error = document.getElementById("error");
+            let customer_id = document.getElementById("customer_id");
             if (xhr.readyState == 4 && xhr.status == 204) {
                 console.log("Movie Rented!");
+
+                empty.style.display = 'none';
+                error.style.display = 'none';
+                success.style.display = 'block';
                 
             }else{
-                console.log("Movie not available at your store!");
+                empty.style.display = 'none';
+                success.style.display = 'none';
+                console.log(xhr.status);
+                if (xhr.status == 606){
+                    error.innerHTML = "Please enter valid ID";
+                }else{
+                    error.innerHTML = "ERROR";
+                }
+                
+                error.style.display = 'block';
             }
+            customer_id.value = "";
+            
         }
 
 
