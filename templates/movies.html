@@ -389,6 +389,8 @@
                 console.log(xhr.status);
                 if (xhr.status == 606){
                     error.innerHTML = "Please enter valid ID";
+                }if (xhr.status == 404){
+                    error.innerHTML = "FILM NOT AVAILABLE AT YOUR STORE";
                 }else{
                     error.innerHTML = "ERROR";
                 }
